@@ -15,6 +15,7 @@ service SalesService {
 
 
     //----------KPI1-----------------------
+    // Group by currency to avoid mixing EUR + TND + USD
     @readonly
     entity RevenueByPeriod     as
         select from my.VBRK {
@@ -49,14 +50,16 @@ service SalesService {
                          then 'Q3'
                     else 'Q4'
                 end   as quarter : String,
-                NETWR as netValue,
-                WAERK as currency
+                WAERK as currency,         // Add to key
+                sum(NETWR) as totalNetValue
         }
         where
                FKSTO <> 'X'
-            or FKSTO is null;
+            or FKSTO is null
+        group by FKDAT, WAERK;
 
     //---------KPI2--------------------------
+    // LEFT JOIN: include orders without customer master (optional KNA1 link)
     @readonly
     entity SalesByCustomer     as
         select from my.VBAK as o
@@ -92,17 +95,19 @@ service SalesService {
             or GBSTK is null;
 
     //---------KPI5 : Délai moyen de traitement---------------
+    // Join from LIKP (delivery headers, not items) to avoid duplication
+    // Calculate processing days directly in database (not in Node.js memory)
     @readonly
     entity ProcessingTimeMetrics as
-        select from my.LIPS as i
-        inner join my.LIKP as d
-            on i.VBELN = d.VBELN
+        select from my.LIKP as d
         inner join my.VBAK as o
-            on i.VGBEL = o.VBELN
+            on d.VBELN = o.VBELN
         {
-            key o._id,
+            key d._id,
             o.AUDAT as orderDate,
-            d.WADAT_IST as actualDeliveryDate
+            d.WADAT_IST as actualDeliveryDate,
+            // Calculate days in database instead of Node.js to avoid NaN from YYYYMMDD format
+            cast(d.WADAT_IST as Date) - cast(o.AUDAT as Date) as processingDays : Integer
         }
         where
                 d.WADAT_IST is not null
@@ -114,6 +119,7 @@ service SalesService {
 
     //---------KPI6 : Répartition géographique----------------
     // Ventes (NETWR) croisées avec le pays du client (LAND1)
+    // INNER JOIN: only include sales with customer master (no orphaned orders)
     @readonly
     entity SalesByCountry      as
         select from my.VBAK as o
