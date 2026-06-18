@@ -27,23 +27,23 @@ service SalesService {
                 substring(
                     FKDAT, 1, 4
                 ) || '-' || substring(
-                    FKDAT, 5, 2
+                    FKDAT, 6, 2
                 )     as month   : String, // 'YYYY-MM'     rebuilt
                 case
                     when substring(
-                             FKDAT, 5, 2
+                             FKDAT, 6, 2
                          ) in (
                              '01', '02', '03'
                          )
                          then 'Q1'
                     when substring(
-                             FKDAT, 5, 2
+                             FKDAT, 6, 2
                          ) in (
                              '04', '05', '06'
                          )
                          then 'Q2'
                     when substring(
-                             FKDAT, 5, 2
+                             FKDAT, 6, 2
                          ) in (
                              '07', '08', '09'
                          )
