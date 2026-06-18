@@ -72,7 +72,7 @@ service SalesService {
         };
 
     //--------KPI3-----------------------
-    function getDeliveryRate()          returns Decimal;
+    function getDeliveryRate()   returns Decimal;
 
     //---------KPI4 : Backlog Commandes-----------------------
     // Commandes en attente de livraison ou facturation (Statut global différent de 'C' - Complet)
@@ -92,7 +92,6 @@ service SalesService {
             or GBSTK is null;
 
     //---------KPI5 : Délai moyen de traitement---------------
-    // Database-agnostic: works with SQLite, HANA, PostgreSQL, MySQL
     @readonly
     entity ProcessingTimeMetrics as
         select from my.LIPS as i

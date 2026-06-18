@@ -3,11 +3,11 @@ namespace sap.pfe.sd;
 // VBAK – Sales Order Headers
 entity VBAK {
   key _id        : String;
-      VBELN      : String;   // Sales order number
+      VBELN      : String @cds.index;   // Sales order number - used in joins
       ERDAT      : String;   // Creation date (YYYY-MM-DD)
-      AUDAT      : String;   // Document date
+      AUDAT      : String @cds.index;   // Document date - used in filtering
       AUART      : String;   // Order type
-      KUNNR      : String;   // Sold-to customer
+      KUNNR      : String @cds.index;   // Sold-to customer - used in joins
       NETWR      : Double;   // Net order value
       WAERK      : String;   // Currency
       VKORG      : String;   // Sales organization
@@ -24,9 +24,9 @@ entity VBAK {
 // VBAP – Sales Order Items
 entity VBAP {
   key _id        : String;
-      VBELN      : String;   // Sales order number
+      VBELN      : String @cds.index;   // Sales order number - used in joins
       POSNR      : String;   // Item number
-      MATNR      : String;   // Material number
+      MATNR      : String @cds.index;   // Material number - used in lookups
       ARKTX      : String;   // Short text
       KWMENG     : Double;   // Confirmed quantity
       VRKME      : String;   // Sales unit
@@ -59,10 +59,10 @@ entity VBFA {
 // LIKP – Delivery Headers
 entity LIKP {
   key _id        : String;
-      VBELN      : String;   // Delivery number
+      VBELN      : String @cds.index;   // Delivery number - used in joins
       ERDAT      : String;   // Creation date
-      LFDAT      : String;   // Planned delivery date
-      WADAT_IST  : String;   // Actual goods issue date
+      LFDAT      : String @cds.index;   // Planned delivery date - used in filtering
+      WADAT_IST  : String @cds.index;   // Actual goods issue date - used in date calculations
       DELAY_DAYS : Integer;  // Computed: WADAT_IST - LFDAT
       KUNNR      : String;   // Ship-to customer
       LFART      : String;   // Delivery type
@@ -77,11 +77,11 @@ entity LIKP {
 // LIPS – Delivery Items
 entity LIPS {
   key _id        : String;
-      VBELN      : String;   // Delivery number
+      VBELN      : String @cds.index;   // Delivery number - used in joins
       POSNR      : String;   // Delivery item
-      VGBEL      : String;   // Reference order
+      VGBEL      : String @cds.index;   // Reference order - used in joins
       VGPOS      : String;   // Reference item
-      MATNR      : String;   // Material number
+      MATNR      : String @cds.index;   // Material number - used in lookups
       LFIMG      : Double;   // Actual delivery quantity
       VRKME      : String;   // Sales unit
       LGORT      : String;   // Storage location
@@ -94,8 +94,8 @@ entity LIPS {
 // VBRK – Invoice Headers
 entity VBRK {
   key _id           : String;
-      VBELN         : String;   // Billing document number
-      FKDAT         : String;   // Billing date (YYYY-MM-DD)
+      VBELN         : String @cds.index;   // Billing document number - used in lookups
+      FKDAT         : String @cds.index;   // Billing date (YYYY-MM-DD) - used for grouping/filtering
       FKART         : String;   // Billing type
       KUNRG         : String;   // Payer customer
       NETWR         : Double;   // Net invoice value
@@ -112,9 +112,9 @@ entity VBRK {
 // VBRP – Invoice Items
 entity VBRP {
   key _id        : String;
-      VBELN      : String;   // Billing document
+      VBELN      : String @cds.index;   // Billing document - used in joins
       POSNR      : String;   // Billing item
-      VGBEL      : String;   // Reference document
+      VGBEL      : String @cds.index;   // Reference document - used in joins
       VGPOS      : String;   // Reference item
       MATNR      : String;   // Material number
       FKIMG      : Double;   // Billed quantity
@@ -129,7 +129,7 @@ entity VBRP {
 // KNA1 – Customer Master
 entity KNA1 {
   key _id        : String;
-      KUNNR      : String;   // Customer number
+      KUNNR      : String @cds.index;   // Customer number - used in joins
       NAME1      : String;   // Customer name
       LAND1      : String;   // Country
       ORT01      : String;   // City
@@ -144,7 +144,7 @@ entity KNA1 {
 // MAKT – Material Descriptions
 entity MAKT {
   key _id        : String;
-      MATNR      : String;   // Material number
+      MATNR      : String @cds.index;   // Material number - used in lookups
       SPRAS      : String;   // Language
       MAKTX      : String;   // Material description
       _sid       : String;
@@ -154,7 +154,7 @@ entity MAKT {
 // MARA – Material Master
 entity MARA {
   key _id        : String;
-      MATNR      : String;   // Material number
+      MATNR      : String @cds.index;   // Material number - used in lookups
       MTART      : String;   // Material type
       MATKL      : String;   // Material group
       MEINS      : String;   // Base unit of measure
