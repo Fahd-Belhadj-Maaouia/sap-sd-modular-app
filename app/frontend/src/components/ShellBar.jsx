@@ -5,16 +5,29 @@ import {  ShellBarBranding } from '@ui5/webcomponents-react/ShellBarBranding';
 import {  ShellBarItem } from '@ui5/webcomponents-react/ShellBarItem';
 import {  ListItemStandard } from '@ui5/webcomponents-react/ListItemStandard';
 import {  ListItemCustom } from '@ui5/webcomponents-react/ListItemCustom';
+import { Popover } from '@ui5/webcomponents-react/Popover';
+import { List } from '@ui5/webcomponents-react/List';
 import {  ListItemGroup } from '@ui5/webcomponents-react/ListItemGroup';
 import {  Avatar } from '@ui5/webcomponents-react/Avatar';
 import '@ui5/webcomponents-icons/dist/menu2.js';
-
+import { useState, useRef } from 'react';
 
 
 
 const ShellBar = () => {
+
+    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  const handleProfileClick = (event) => {
+    profileRef.current = event.detail.targetRef;
+    
+    
+    setIsPopoverOpen((prev) => !prev);
+  };
     
   return (
+    <>
     <ShellBarUI5
   branding={<ShellBarBranding href="https://ui5.github.io/webcomponents-react/v2/?path=/docs/layouts-floorplans-shellbar--docs" logo={<img alt="SAP Logo" src="https://ui5.github.io/webcomponents/images/sap-logo-svg.svg"/>} onClick={function pU(){}} target="_blank">Sales and Distribution</ShellBarBranding>}
   logo={<img alt="SAP Logo" src="https://ui5.github.io/webcomponents/images/sap-logo-svg.svg"/>}
@@ -24,7 +37,7 @@ const ShellBar = () => {
   onMenuItemClick={function pU(){}}
   onNotificationsClick={function pU(){}}
   onProductSwitchClick={function pU(){}}
-  onProfileClick={function pU(){}}
+  onProfileClick={handleProfileClick}
   onSearchButtonClick={function pU(){}}
   primaryTitle="Primary Title"
   profile={<Avatar
@@ -43,8 +56,21 @@ const ShellBar = () => {
     icon="sys-help"
     text="Help"
   />
+  
 </ShellBarUI5>
+<Popover 
+  open={isPopoverOpen}
+  onClose={() => setIsPopoverOpen(false)} // Reset state when closed
+  opener={profileRef.current}
+>
+  <List>
+    <ListItemStandard>Settings</ListItemStandard>
+    <ListItemStandard>Log Out</ListItemStandard>
+  </List>
+</Popover>
+</>
   )
+  
 }
 
 export default ShellBar
