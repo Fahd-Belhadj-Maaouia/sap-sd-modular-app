@@ -4,7 +4,9 @@ const BASE_URL = 'http://localhost:4004/odata/v4/sales';
 
 // For your SalesPerCountry component
 export const fetchSalesByCountry = async () => {
-  const response = await axios.get(`${BASE_URL}/SalesByCountry`);
+  const response = await axios.get(
+    `${BASE_URL}/SalesByCountry?$apply=groupby((country),aggregate($count as appearanceCount))`
+  );
   return response.data.value; 
 };
 

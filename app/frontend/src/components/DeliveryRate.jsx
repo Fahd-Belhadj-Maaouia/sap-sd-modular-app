@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader } from '@ui5/webcomponents-react';
 import { RadialChart } from '@ui5/webcomponents-react-charts/RadialChart';
-import { fetchDeliveryRate } from '../services/capService'; // Adjust path if your service folder is elsewhere
+import { fetchDeliveryRate } from '../services/capService';
 
 const DeliveryRate = () => {
   // 1. Initialize state for the live rate and loading status
