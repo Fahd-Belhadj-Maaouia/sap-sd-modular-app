@@ -95,23 +95,13 @@ service SalesService {
             or GBSTK is null;
 
     //---------KPI5 : Délai moyen de traitement---------------
-    // Join from LIKP (delivery headers, not items) to avoid duplication
-    // Calculate processing days directly in database (not in Node.js memory)
     @readonly
-    entity ProcessingTimeMetrics as
-        select from my.LIKP as d
-        inner join my.VBAK as o
-            on d.VBELN = o.VBELN
-        {
-            key d._id,
-            o.AUDAT as orderDate,
-            d.WADAT_IST as actualDeliveryDate,
-            // Calculate days in database instead of Node.js to avoid NaN from YYYYMMDD format
-            cast(d.WADAT_IST as Date) - cast(o.AUDAT as Date) as processingDays : Integer
-        }
-        where
-                d.WADAT_IST is not null
-            and o.AUDAT is not null;
+    entity ProcessingTimeMetrics {
+        key _id               : String;
+            orderDate         : String;
+            actualDeliveryDate : String;
+            processingDays     : Integer;
+    }
 
     // Fonction pour calculer la moyenne en jours
     function getAverageProcessingTime() returns Decimal;

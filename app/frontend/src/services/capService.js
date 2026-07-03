@@ -24,8 +24,20 @@ export const fetchSalesChartData = async () => {
 
 export const fetchDeliveryRate = async () => {
   try {
-    // Notice the empty parentheses () at the end of the URL
+    
     const response = await axios.get(`${BASE_URL}/getDeliveryRate()`);
+    
+    // OData v4 functions wrap their scalar return values inside a 'value' key
+    return response.data.value; 
+  } catch (error) {
+    console.error("Error invoking getDeliveryRate:", error);
+    throw error;
+  }
+};
+export const fetchProcessingTimeMetrics = async () => {
+  try {
+    
+    const response = await axios.get(`${BASE_URL}/getAverageProcessingTime()`);
     
     // OData v4 functions wrap their scalar return values inside a 'value' key
     return response.data.value; 

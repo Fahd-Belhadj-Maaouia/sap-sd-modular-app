@@ -1,119 +1,108 @@
-import React from 'react'
-import {  BarChart } from '@ui5/webcomponents-react-charts/BarChart';
+import React, { useEffect, useMemo, useState } from 'react';
+import { BarChart } from '@ui5/webcomponents-react-charts/BarChart';
 import { Card, CardHeader } from '@ui5/webcomponents-react';
+import { fetchTopClients } from '../services/capService';
 
 const TopClients = () => {
+  const [rawData, setRawData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTopClients()
+      .then((data) => {
+        setRawData(data || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error loading top clients data:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  const processedData = useMemo(() => {
+    const groups = {};
+
+    rawData.forEach((item) => {
+      if (!item.customerName || !String(item.customerName).trim()) {
+        return;
+      }
+
+      const customerId = item.customerId || 'N/A';
+      const customerName = String(item.customerName).trim();
+      const key = customerId;
+
+      if (!groups[key]) {
+        groups[key] = {
+          customerName,
+          orderVolume: 0,
+          revenue: 0
+        };
+      }
+
+      groups[key].orderVolume += 1;
+      groups[key].revenue += Number(item.netValue) || 0;
+    });
+
+    return Object.values(groups)
+      .sort((a, b) => {
+        if (b.orderVolume !== a.orderVolume) {
+          return b.orderVolume - a.orderVolume;
+        }
+
+        return b.revenue - a.revenue;
+      })
+      .slice(0, 12)
+      .map((entry, index) => ({
+        ...entry,
+        revenueScaled: entry.revenue / 1000,
+        rankedClient: `${String(index + 1).padStart(2, '0')} - ${entry.customerName}`
+      }));
+  }, [rawData]);
+
+  const chartDimensions = useMemo(
+    () => [
+      {
+        accessor: 'rankedClient'
+      }
+    ],
+    []
+  );
+
+  const chartMeasures = useMemo(
+    () => [
+      {
+        accessor: 'orderVolume',
+        label: 'Volume de commandes'
+      },
+      {
+        accessor: 'revenueScaled',
+        label: 'CA (x1000)'
+      }
+    ],
+    []
+  );
+
+  const chartStyle = useMemo(() => ({ height: '400px' }), []);
+
   return (
-    <Card 
-          header={<CardHeader titleText="Top clients" subtitleText="Par volume et chiffre d'affaires" />}
-          style={{ width: '1000px', margin: '-50px auto', padding: '16px'}}
-        >
-    
-    <BarChart
-  dataset={[
-    {
-      name: 'January',
-      sessions: 300,
-      users: 100,
-      volume: 756
-    },
-    {
-      name: 'February',
-      sessions: 330,
-      users: 230,
-      volume: 880
-    },
-    {
-      name: 'March',
-      sessions: 404,
-      users: 240,
-      volume: 700
-    },
-    {
-      name: 'April',
-      sessions: 80,
-      users: 280,
-      volume: 604
-    },
-    {
-      name: 'May',
-      sessions: 300,
-      users: 100,
-      volume: 756
-    },
-    {
-      name: 'June',
-      sessions: 330,
-      users: 230,
-      volume: 880
-    },
-    {
-      name: 'July',
-      sessions: 470,
-      users: 20,
-      volume: 450
-    },
-    {
-      name: 'August',
-      sessions: 180,
-      users: 220,
-      volume: 104
-    },
-    {
-      name: 'September',
-      sessions: 360,
-      users: 200,
-      volume: 1000
-    },
-    {
-      name: 'October',
-      sessions: 500,
-      users: 250,
-      volume: 200
-    },
-    {
-      name: 'November',
-      sessions: 404,
-      users: 240,
-      volume: 700
-    },
-    {
-      name: 'December',
-      sessions: 80,
-      users: 280,
-      volume: 604
-    }
-  ]}
-  dimensions={[
-    {
-      accessor: 'name'
-    }
-  ]}
-  measures={[
-    {
-      accessor: 'users',
-      formatter: function pU(){},
-      label: 'Users',
-      opacity: 0.6
-    },
-    {
-      accessor: 'sessions',
-      formatter: function pU(){},
-      hideDataLabel: true,
-      label: 'Active Sessions'
-    },
-    {
-      accessor: 'volume',
-      label: 'Vol.'
-    }
-  ]}
-  onClick={function pU(){}}
-  onDataPointClick={function pU(){}}
-  onLegendClick={function pU(){}}
-/>
+    <Card
+      header={<CardHeader titleText="Top clients" subtitleText="Par volume de commandes et chiffre d'affaires" />}
+      style={{ maxWidth: '1000px', margin: '20px auto', padding: '16px' }}
+    >
+      {loading ? (
+        <div style={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <span>Chargement...</span>
+        </div>
+      ) : (
+        <BarChart
+          dataset={processedData}
+          dimensions={chartDimensions}
+          measures={chartMeasures}
+          style={chartStyle}
+        />
+      )}
+    </Card>
+  );
+};
 
-</Card>
-  )
-}
-
-export default TopClients
+export default TopClients;
