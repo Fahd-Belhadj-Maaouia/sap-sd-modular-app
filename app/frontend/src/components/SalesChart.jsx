@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-
 import { BarChart } from '@ui5/webcomponents-react-charts/BarChart';
-
 import { Card, CardHeader } from '@ui5/webcomponents-react';
-
 import { fetchSalesChartData } from '../services/capService';
 
 
@@ -11,35 +8,22 @@ import { fetchSalesChartData } from '../services/capService';
 const SalesChart = () => {
 
   const [periodType, setPeriodType] = useState('month'); // State to track 'month' or 'quarter'
-
   const [rawData, setRawData] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
 
 
   // 1. Fetch data on component mount
-
   useEffect(() => {
-
     fetchSalesChartData()
-
       .then((data) => {
-
         setRawData(data || []);
-
         setLoading(false);
-
       })
-
       .catch((err) => {
-
         console.error("Error loading sales chart data:", err);
-
         setLoading(false);
-
       });
-
   }, []);
 
 

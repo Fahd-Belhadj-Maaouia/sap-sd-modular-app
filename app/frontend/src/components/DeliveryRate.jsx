@@ -74,7 +74,7 @@ const DeliveryRate = () => {
         width: '400px',
         margin: '-20px auto',
         padding: '16px',
-        height: '450px',
+        height: '465px',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '240px' }}>

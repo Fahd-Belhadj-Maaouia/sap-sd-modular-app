@@ -22,6 +22,11 @@ export const fetchSalesChartData = async () => {
   return response.data.value;
 };
 
+export const fetchOrderBacklog = async () => {
+  const response = await axios.get(`${BASE_URL}/OrderBacklog`);
+  return response.data.value;
+};
+
 export const fetchDeliveryRate = async () => {
   try {
     
